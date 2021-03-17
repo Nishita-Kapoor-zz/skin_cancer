@@ -1,0 +1,12 @@
+torch
+torchvision
+numpy
+matplotlib
+Pillow
+pandas
+pyyaml
+tensorboard
+tqdm
+scikit-learn
+seaborn
+opencv-python-headless==4.5.1.48

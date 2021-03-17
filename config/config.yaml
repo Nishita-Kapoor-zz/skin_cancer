@@ -1,0 +1,12 @@
+
+datadir: '/home/nishita/datasets/skin_mnist'
+
+
+visualize_data: True
+sample_input: True
+
+train:
+
+batch_size:
+
+num_epochs:
