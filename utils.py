@@ -2,7 +2,8 @@ import torch
 from torch.utils.data import Dataset
 import numpy as np
 from PIL import Image
-import tqdm
+from tqdm import tqdm
+import cv2
 
 
 class CustomDataset(Dataset):
@@ -21,6 +22,23 @@ class CustomDataset(Dataset):
         if self.transform:
             X = self.transform(X)
         return X, y
+
+
+class AverageMeter(object):
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val * n
+        self.count += n
+        self.avg = self.sum / self.count
 
 
 def compute_img_mean_std(image_paths):
@@ -53,6 +71,6 @@ def compute_img_mean_std(image_paths):
 
     print("normMean = {}".format(means))
     print("normStd = {}".format(stdevs))
-    return means,stdevs
+    return means, stdevs
 
 

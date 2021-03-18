@@ -7,11 +7,14 @@ import matplotlib.image as mpimg
 import seaborn as sns
 colors = sns.color_palette()
 import cv2
+from glob import glob
 
 
-def view_samples(imageid_path_dict, all_image_path):
+def view_samples(args):
     # visualize some sample images
-    # w, h = 10, 10
+    all_image_path = glob(os.path.join(args.path, '*', '*.jpg'))
+    imageid_path_dict = {os.path.splitext(os.path.basename(x))[0]: x for x in all_image_path}
+
     fig = plt.figure(figsize=(5, 5))
     columns, rows = 3, 2
     start, end = 0, len(imageid_path_dict)
@@ -28,7 +31,6 @@ def view_samples(imageid_path_dict, all_image_path):
     plt.tight_layout()
     plt.title('Sample input images', fontdict={'size': 10})
     plt.show()
-
 
     # Checking the size and number of channels in the image
     arr = np.asarray(Image.open(all_image_path[10]))
@@ -62,6 +64,7 @@ def data_dist(args):
 
     classes = df_original['dx'].value_counts()
     n_samples = 3
+
 
 '''
     # Visualizing images from each class
