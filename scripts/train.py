@@ -44,6 +44,8 @@ def training(args, model, criterion, optimizer, device):
             prediction = outputs.max(1, keepdim=True)[1]
             train_acc.update(prediction.eq(labels.view_as(prediction)).sum().item() / N)
             train_loss.update(loss.item())
+            tb_writer.add_scalar("Train Loss", train_loss.avg, i)
+            tb_writer.add_scalar("Train Accuracy", train_acc.avg, i)
             curr_iter += 1
             if (i + 1) % 100 == 0:
                 print('[epoch %d], [iter %d / %d], [train loss %.5f], [train acc %.5f]' % (
@@ -52,8 +54,8 @@ def training(args, model, criterion, optimizer, device):
                 total_acc_train.append(train_acc.avg)
         loss_train = train_loss.avg
         acc_train = train_acc.avg
-        tb_writer.add_scalar("Train Loss", loss_train, epoch)
-        tb_writer.add_scalar("Train Accuracy", acc_train, epoch)
+        tb_writer.add_scalar("Train Loss/epoch", loss_train, epoch)
+        tb_writer.add_scalar("Train Accuracy/epoch", acc_train, epoch)
 
         # Validation
         model.eval()
@@ -63,7 +65,7 @@ def training(args, model, criterion, optimizer, device):
         total_loss_val, total_acc_val = [], []
 
         with torch.no_grad():
-            for _, data in enumerate(dataloaders['val']):
+            for i, data in enumerate(dataloaders['val']):
                 images, labels = data
                 N = images.size(0)
                 images = Variable(images).to(device)
@@ -75,11 +77,12 @@ def training(args, model, criterion, optimizer, device):
                 val_acc.update(prediction.eq(labels.view_as(prediction)).sum().item() / N)
 
                 val_loss.update(criterion(outputs, labels).item())
-
+                tb_writer.add_scalar("Val Loss", val_loss.avg, i)
+                tb_writer.add_scalar("Val Accuracy", val_acc.avg, i)
         loss_val = val_loss.avg
         acc_val = val_acc.avg
-        tb_writer.add_scalar("Val Loss", loss_val, epoch)
-        tb_writer.add_scalar("Val Accuracy", acc_val, epoch)
+        tb_writer.add_scalar("Val Loss/Epoch", loss_val, epoch)
+        tb_writer.add_scalar("Val Accuracy/Epoch", acc_val, epoch)
         print('------------------------------------------------------------')
         print('[epoch %d], [val loss %.5f], [val acc %.5f]' % (epoch, loss_val, acc_val))
         print('------------------------------------------------------------')
@@ -93,15 +96,15 @@ def training(args, model, criterion, optimizer, device):
             print('*****************************************************')
     tb_writer.close()
 
-    fig = plt.figure(num=2)
-    fig1 = fig.add_subplot(2, 1, 1)
-    fig2 = fig.add_subplot(2, 1, 2)
-    fig1.plot(total_loss_train, label='training loss')
-    fig1.plot(total_acc_train, label='training accuracy')
-    fig2.plot(total_loss_val, label='validation loss')
-    fig2.plot(total_acc_val, label='validation accuracy')
-    plt.legend()
-    plt.show()
+    #fig = plt.figure(num=2)
+    #fig1 = fig.add_subplot(2, 1, 1)
+    #fig2 = fig.add_subplot(2, 1, 2)
+    #fig1.plot(total_loss_train, label='training loss')
+    #fig1.plot(total_acc_train, label='training accuracy')
+    #fig2.plot(total_loss_val, label='validation loss')
+    #fig2.plot(total_acc_val, label='validation accuracy')
+    #plt.legend()
+    #plt.show()
 
 '''
 def train(train_loader, model, criterion, optimizer, epoch, device):
