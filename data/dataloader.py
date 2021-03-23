@@ -50,9 +50,9 @@ def create_dataloaders(args):
 
     # Dataloader iterators
     dataloaders = {
-        'train': DataLoader(datasets['train'], batch_size=args.batch_size, shuffle=True, num_workers=4),
-        'val': DataLoader(datasets['val'], batch_size=args.batch_size, shuffle=False, num_workers=4),
-        'test': DataLoader(datasets['test'], batch_size=args.batch_size, shuffle=False, num_workers=4)
+        'train': DataLoader(datasets['train'], batch_size=args.batch_size, shuffle=True, num_workers=2),
+        'val': DataLoader(datasets['val'], batch_size=args.batch_size, shuffle=False, num_workers=2),
+        'test': DataLoader(datasets['test'], batch_size=args.batch_size, shuffle=False, num_workers=2)
     }
 
     return datasets, dataloaders

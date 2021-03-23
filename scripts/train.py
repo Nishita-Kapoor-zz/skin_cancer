@@ -1,7 +1,7 @@
-import torch
 from torch.autograd import Variable
 from tqdm import tqdm
 from utils import AverageMeter
+from torch.utils.tensorboard import SummaryWriter
 
 from data.dataloader import *
 import matplotlib.pyplot as plt
@@ -11,11 +11,10 @@ def training(args, model, criterion, optimizer, device):
     _, dataloaders = create_dataloaders(args)
     epoch_num = args.num_epochs
     best_val_acc = 0
-    total_loss_val, total_acc_val = [], []
+
+    tb_writer = SummaryWriter()
 
     for epoch in range(1, epoch_num+1):
-        # loss_train, acc_train, total_loss_train, total_acc_train = train(train_loader, model, criterion, optimizer,
-        # epoch, device)
 
         model.train()
 
@@ -53,11 +52,15 @@ def training(args, model, criterion, optimizer, device):
                 total_acc_train.append(train_acc.avg)
         loss_train = train_loss.avg
         acc_train = train_acc.avg
+        tb_writer.add_scalar("Train Loss", loss_train, epoch)
+        tb_writer.add_scalar("Train Accuracy", acc_train, epoch)
 
         # Validation
         model.eval()
         val_loss = AverageMeter()
         val_acc = AverageMeter()
+
+        total_loss_val, total_acc_val = [], []
 
         with torch.no_grad():
             for _, data in enumerate(dataloaders['val']):
@@ -75,6 +78,8 @@ def training(args, model, criterion, optimizer, device):
 
         loss_val = val_loss.avg
         acc_val = val_acc.avg
+        tb_writer.add_scalar("Val Loss", loss_val, epoch)
+        tb_writer.add_scalar("Val Accuracy", acc_val, epoch)
         print('------------------------------------------------------------')
         print('[epoch %d], [val loss %.5f], [val acc %.5f]' % (epoch, loss_val, acc_val))
         print('------------------------------------------------------------')
@@ -86,6 +91,7 @@ def training(args, model, criterion, optimizer, device):
             print('*****************************************************')
             print('best record: [epoch %d], [val loss %.5f], [val acc %.5f]' % (epoch, loss_val, acc_val))
             print('*****************************************************')
+    tb_writer.close()
 
     fig = plt.figure(num=2)
     fig1 = fig.add_subplot(2, 1, 1)
