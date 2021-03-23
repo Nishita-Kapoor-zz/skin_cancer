@@ -23,7 +23,7 @@ parser.add_argument('--num_epochs', type=int, default=5, help='Number of epochs 
 parser.add_argument('--train', default=True, type=bool, help='Train the model')
 parser.add_argument('--path', default='/home/nishita/datasets/skin_mnist', type=str, help='Path of dataset')
 parser.add_argument("--version", default=1, type=int, help="Version of experiment")
-parser.add_argument("--batch_size", default=32, type=int, help="batch-size to use")
+parser.add_argument("--batch_size", default=2, type=int, help="batch-size to use")
 parser.add_argument("--lr", default=1e-3, type=float, help="learning rate to use")
 parser.add_argument("--model", default="resnet18", help="network architecture")
 

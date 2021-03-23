@@ -12,7 +12,11 @@ def training(args, model, criterion, optimizer, device):
     epoch_num = args.num_epochs
     best_val_acc = 0
 
-    tb_writer = SummaryWriter()
+    logs_path = "./logs/v_" + str(args.version)
+    if not os.path.exists(logs_path):
+        os.makedirs(logs_path)
+
+    tb_writer = SummaryWriter(logs_path)
 
     for epoch in range(1, epoch_num+1):
 
