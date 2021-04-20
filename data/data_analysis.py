@@ -6,15 +6,12 @@ from glob import glob
 import seaborn as sns
 colors = sns.color_palette()
 
-
-datadir = '/home/nishita/datasets/skin_mnist'
-
-# match imgae_id to path for all images in dataset
+# match image_id to path for all images in dataset
 all_image_path = glob("/home/nishita/datasets/skin_mnist/*/*.jpg")
 imageid_path_dict = {os.path.splitext(os.path.basename(x))[0]: x for x in all_image_path}
 
 
-def get_data(datadir, imageid_path_dict):
+def get_data(data_path, imageid_path_dict):
 
     # dict of lesion code (dx) to name
     lesion_type_dict = {
@@ -29,7 +26,7 @@ def get_data(datadir, imageid_path_dict):
 
     # Exploring the HAM10000_metadata
 
-    df_original = pd.read_csv(os.path.join(datadir, 'HAM10000_metadata.csv'))  # read csv file
+    df_original = pd.read_csv(os.path.join(data_path, 'HAM10000_metadata.csv'))  # read csv file
     df_original['path'] = df_original['image_id'].map(imageid_path_dict.get)   # map image_id to its path
     df_original['cell_type'] = df_original['dx'].map(lesion_type_dict.get)     # map dx to lesion type
     df_original['cell_type_idx'] = pd.Categorical(df_original['cell_type']).codes  # assign class codes for lesion types

@@ -7,7 +7,7 @@ from collections import OrderedDict
 import cv2
 import matplotlib.pyplot as plt
 from torch import nn
-
+import os
 
 class CustomDataset(Dataset):
     def __init__(self, df, transform=None):
@@ -77,7 +77,7 @@ def compute_img_mean_std(image_paths):
     return means, stdevs
 
 
-def plot_confusion_matrix(cm, classes,
+def plot_confusion_matrix(cm, fig_path, classes,
                           normalize=False,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
@@ -105,7 +105,7 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    plt.show()
+    plt.savefig(fig_path)
 
 
 def remove_redundant_keys(state_dict: OrderedDict):
@@ -162,3 +162,8 @@ def load_checkpoint(path, model=None, optimizer=None, params=False, epoch=False)
         rets["epoch"] = resume["epoch"]
 
     return rets
+
+def create_folder(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+

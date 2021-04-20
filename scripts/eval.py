@@ -1,16 +1,51 @@
 from torch.autograd import Variable
-from utils import plot_confusion_matrix
+from utils import plot_confusion_matrix, create_folder
 from torch.utils.tensorboard import SummaryWriter
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from data.dataloader import *
 import matplotlib.pyplot as plt
+import pandas
+
+'''
+def predict(**cfg):
+
+    # Create a test loader
+    loader = transforms.Compose([transforms.Resize((input_size, input_size)),
+                                    transforms.ToTensor(),
+                                    transforms.Normalize(norm_mean, norm_std)])
+    ])
+
+    # Load the image as a Pytorch Tensor
+    image = loader(Image.open(cfg["predict"]["image_path"]).convert("RGB")).float().unsqueeze(0)
+
+    # Load Model
+    model = load_checkpoint(**cfg)
+
+    # Check GPU availability
+    train_gpu, _ = check_gpu()
+    if train_gpu:
+        image = image.cuda()
+
+    # Get model prediction
+    output = model(image)
+    _, pred = torch.max(output, 1)
+
+    # Check prediction - Normal or Pneumonia
+    print("Prediction: " + str(model.idx_to_class[pred]))
+'''
 
 
-def evaluate(args,device):
+def evaluate(args, device):
     _, dataloaders = create_dataloaders(args)
-    checkpoint_path = "./output/v_" + str(args.version)
-    checkpoint = load_checkpoint(path=checkpoint_path, model=model)
+    checkpoint_path = "./output/checkpoints/checkpoint_v" + str(args.version) + ".pth"
+    checkpoint = load_checkpoint(path=checkpoint_path)
+    save_path = "./output/metrics/"
+    create_folder(save_path)
+
+    fig_save = save_path + "confusion_matrix_v" + str(args.version) + ".png"
+    csv_save = save_path + "report_v" + str(args.version) + ".csv"
+
     model = checkpoint["model"]
     model = model.to(device)
 
@@ -32,12 +67,8 @@ def evaluate(args,device):
     # plot the confusion matrix
     plot_labels = ['akiec', 'bcc', 'bkl', 'df', 'nv', 'vasc', 'mel']
 
-    plot_confusion_matrix(confusion_mtx, plot_labels)
+    plot_confusion_matrix(confusion_mtx, fig_path=fig_save, classes=plot_labels)
 
-    report = classification_report(y_label, y_predict, target_names=plot_labels)
-    print(report)
-
-    #label_frac_error = 1 - np.diag(confusion_mtx) / np.sum(confusion_mtx, axis=1)
-    #plt.bar(np.arange(7), label_frac_error)
-    #plt.xlabel('True Label')
-    #plt.ylabel('Fraction classified incorrectly')
+    report = classification_report(y_label, y_predict, target_names=plot_labels, output_dict=True)
+    report_df = pandas.DataFrame(report).transpose()
+    report_df.to_csv(csv_save, index=False)
