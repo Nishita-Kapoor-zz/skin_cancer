@@ -38,7 +38,7 @@ def create_dataloaders(args):
     imageid_path_dict = {os.path.splitext(os.path.basename(x))[0]: x for x in all_image_path}
 
     df_train, df_val, df_test = get_data(args.path, imageid_path_dict)
-    norm_mean = [0.7630401, 0.5456478, 0.57004625]
+    norm_mean = [0.7630401, 0.5456478, 0.57004625]   # change back later
     norm_std = [0.1409284, 0.1526128, 0.16997087]
     image_transforms = image_transform(norm_mean, norm_std)
 

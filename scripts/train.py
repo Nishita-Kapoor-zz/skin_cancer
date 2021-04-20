@@ -11,10 +11,15 @@ def training(args, model, criterion, optimizer, device):
     _, dataloaders = create_dataloaders(args)
     epoch_num = args.num_epochs
     best_val_acc = 0
+    val_loss_min = np.Inf
 
     logs_path = "./logs/v_" + str(args.version)
     if not os.path.exists(logs_path):
         os.makedirs(logs_path)
+
+    output_file_name = "./output/v_" + str(args.version)
+    if not os.path.exists(output_file_name):
+        os.makedirs(output_file_name)
 
     tb_writer = SummaryWriter(logs_path)
 
@@ -87,17 +92,23 @@ def training(args, model, criterion, optimizer, device):
         acc_val = val_acc.avg
         tb_writer.add_scalar("Val Loss/Epoch", loss_val, epoch)
         tb_writer.add_scalar("Val Accuracy/Epoch", acc_val, epoch)
+
         print('------------------------------------------------------------')
         print('[epoch %d], [val loss %.5f], [val acc %.5f]' % (epoch, loss_val, acc_val))
         print('------------------------------------------------------------')
 
         total_loss_val.append(loss_val)
         total_acc_val.append(acc_val)
-        if acc_val > best_val_acc:
-            best_val_acc = acc_val
+
+        if loss_val < val_loss_min:
+            # Save model
+            save_checkpoint(path=output_file_name, model=model, epoch=epoch, optimizer=optimizer)
+            val_loss_min = loss_val
             print('*****************************************************')
             print('best record: [epoch %d], [val loss %.5f], [val acc %.5f]' % (epoch, loss_val, acc_val))
             print('*****************************************************')
+
+
     tb_writer.close()
 
     #fig = plt.figure(num=2)

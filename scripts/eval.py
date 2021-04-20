@@ -7,8 +7,13 @@ from data.dataloader import *
 import matplotlib.pyplot as plt
 
 
-def evaluate(args, model, device):
+def evaluate(args,device):
     _, dataloaders = create_dataloaders(args)
+    checkpoint_path = "./output/v_" + str(args.version)
+    checkpoint = load_checkpoint(path=checkpoint_path, model=model)
+    model = checkpoint["model"]
+    model = model.to(device)
+
     model.eval()
     y_label = []
     y_predict = []

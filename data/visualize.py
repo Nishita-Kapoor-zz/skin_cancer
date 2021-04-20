@@ -15,6 +15,10 @@ def view_samples(args):
     all_image_path = glob(os.path.join(args.path, '*', '*.jpg'))
     imageid_path_dict = {os.path.splitext(os.path.basename(x))[0]: x for x in all_image_path}
 
+    save_path = "./output/data"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
     fig = plt.figure(figsize=(5, 5))
     columns, rows = 3, 2
     start, end = 0, len(imageid_path_dict)
@@ -30,6 +34,7 @@ def view_samples(args):
         plt.imshow(img)
     plt.tight_layout()
     plt.title('Sample input images', fontdict={'size': 10})
+    plt.savefig(save_path)
     plt.show()
 
     # Checking the size and number of channels in the image
@@ -40,6 +45,7 @@ def view_samples(args):
 def data_dist(args):
 
     df_original = pd.read_csv(os.path.join(args.path, 'HAM10000_metadata.csv'))
+    save_path = "./output/data"
 
     # Counts in each class
     plt.figure(figsize=(8, 5))
@@ -60,13 +66,16 @@ def data_dist(args):
                       color=colors[0])
     plt.title('Distribution of Age', fontdict={'size': 20})
     plt.xlabel('age')
+    plt.savefig(save_path)
     plt.show()
 
+
+'''
     classes = df_original['dx'].value_counts()
     n_samples = 3
 
 
-'''
+
     # Visualizing images from each class
     fig, ax = plt.subplots(len(classes), n_samples, figsize=(4*n_samples, 15))
     for i in range(len(classes)):
