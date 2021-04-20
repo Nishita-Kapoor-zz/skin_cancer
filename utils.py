@@ -141,15 +141,14 @@ def save_checkpoint(path, model, epoch, optimizer=None, save_arch=False, params=
             torch.save(attributes, path)
 
 
-def load_checkpoint(path, model=None, optimizer=None, params=False, epoch=False):
+def load_checkpoint(path, model, optimizer=None, params=False, epoch=False):
     resume = torch.load(path)
     rets = dict()
 
-    if model is not None:
-        if isinstance(model, nn.DataParallel):
-            model.module.load_state_dict(remove_redundant_keys(resume["state_dict"]))
-        else:
-            model.load_state_dict(remove_redundant_keys(resume["state_dict"]))
+    if isinstance(model, nn.DataParallel):
+        model.module.load_state_dict(remove_redundant_keys(resume["state_dict"]))
+    else:
+        model.load_state_dict(remove_redundant_keys(resume["state_dict"]))
 
         rets["model"] = model
 
@@ -162,6 +161,7 @@ def load_checkpoint(path, model=None, optimizer=None, params=False, epoch=False)
         rets["epoch"] = resume["epoch"]
 
     return rets
+
 
 def create_folder(path):
     if not os.path.exists(path):

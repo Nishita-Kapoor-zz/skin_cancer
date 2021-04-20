@@ -6,7 +6,7 @@ from sklearn.metrics import classification_report
 from data.dataloader import *
 import matplotlib.pyplot as plt
 import pandas
-
+from torchvision import models
 '''
 def predict(**cfg):
 
@@ -36,10 +36,10 @@ def predict(**cfg):
 '''
 
 
-def evaluate(args, device):
+def evaluate(args, device, model):
     _, dataloaders = create_dataloaders(args)
     checkpoint_path = "./output/checkpoints/checkpoint_v" + str(args.version) + ".pth"
-    checkpoint = load_checkpoint(path=checkpoint_path)
+    checkpoint = load_checkpoint(path=checkpoint_path, model=model)
     save_path = "./output/metrics/"
     create_folder(save_path)
 

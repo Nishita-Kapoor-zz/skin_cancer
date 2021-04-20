@@ -49,7 +49,7 @@ if args.train:
     training(args, model, criterion, optimizer, device)
 
 if args.test:
-    evaluate(args, device)
+    evaluate(args, model, device)
 
 if args.view_data:
     view_samples(args)
