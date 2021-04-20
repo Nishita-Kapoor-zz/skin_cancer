@@ -1,12 +1,10 @@
-from torch.autograd import Variable
-from utils import plot_confusion_matrix, create_folder
-from torch.utils.tensorboard import SummaryWriter
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-from data.dataloader import *
-import matplotlib.pyplot as plt
 import pandas
-from torchvision import models
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from torch.autograd import Variable
+
+from data.dataloader import *
+
 '''
 def predict(**cfg):
 
@@ -53,7 +51,7 @@ def evaluate(args, device, model):
     y_label = []
     y_predict = []
     with torch.no_grad():
-        for i, data in enumerate(dataloaders['test']):
+        for i, data in tqdm(enumerate(dataloaders['test'])):
             images, labels = data
             N = images.size(0)
             images = Variable(images).to(device)

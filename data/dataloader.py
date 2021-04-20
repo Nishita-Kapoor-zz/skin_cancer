@@ -1,8 +1,6 @@
 from torchvision import transforms
 from torch.utils.data import DataLoader
 from utils import *
-import os
-from glob import glob
 from data.data_analysis import *
 
 
