@@ -10,6 +10,15 @@ colors = sns.color_palette()
 all_image_path = glob("/home/nishita/datasets/skin_mnist/*/*.jpg")
 imageid_path_dict = {os.path.splitext(os.path.basename(x))[0]: x for x in all_image_path}
 
+class_mapping = {0:'Actinic keratoses',
+                 1:"Basal cell carcinoma",
+                 2: 'Benign keratosis-like lesions',
+                 3: 'Dermatofibroma',
+                 4: 'Melanocytic nevi',
+                 5: 'Vascular lesions',
+                 6: 'dermatofibroma',
+                 }
+
 
 def get_data(data_path, imageid_path_dict):
 
@@ -17,7 +26,7 @@ def get_data(data_path, imageid_path_dict):
     lesion_type_dict = {
         'nv': 'Melanocytic nevi',
         'mel': 'dermatofibroma',
-        'bkl': 'Benign keratosis-like lesions ',
+        'bkl': 'Benign keratosis-like lesions',
         'bcc': 'Basal cell carcinoma',
         'akiec': 'Actinic keratoses',
         'vasc': 'Vascular lesions',
