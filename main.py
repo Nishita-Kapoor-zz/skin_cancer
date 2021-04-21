@@ -51,9 +51,9 @@ class_dist = [282, 461, 967, 103, 5380, 123, 1044]
 norm_weights = [1 - (x / sum(class_dist)) for x in class_dist]
 weights = torch.tensor(norm_weights).to(device)
 
-if args.criterion == 'focal':
+if args.loss == 'focal':
     criterion = FocalLoss(weight=weights, gamma=2).to(device)
-elif args.criterion == 'weighted_ce':
+elif args.loss == 'weighted_ce':
     criterion = nn.CrossEntropyLoss(weight=weights).to(device)
 else:
     criterion = nn.CrossEntropyLoss().to(device)

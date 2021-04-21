@@ -6,9 +6,6 @@ from glob import glob
 import seaborn as sns
 colors = sns.color_palette()
 
-# match image_id to path for all images in dataset
-all_image_path = glob("/home/nishita/datasets/skin_mnist/*/*.jpg")
-imageid_path_dict = {os.path.splitext(os.path.basename(x))[0]: x for x in all_image_path}
 
 class_mapping = {0:'Actinic keratoses',
                  1:"Basal cell carcinoma",

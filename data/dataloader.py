@@ -32,6 +32,9 @@ def image_transform(norm_mean, norm_std):
 
 def create_dataloaders(args):
 
+    all_image_path = glob(os.path.join(args.path, '*', '*.jpg'))
+    imageid_path_dict = {os.path.splitext(os.path.basename(x))[0]: x for x in all_image_path}
+
     df_train, df_val, df_test = get_data(args.path, imageid_path_dict)
     # norm_mean, norm_std = compute_img_mean_std(all_image_path)
     norm_mean = [0.7630401, 0.5456478, 0.57004625]   # change back later
