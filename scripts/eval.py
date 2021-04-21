@@ -23,12 +23,22 @@ def predict(args, device, model):
     else:
         raise AssertionError("Checkpoint doesn't exist, please train model first")
 
+    model = checkpoint["model"]
+    model = model.to(device)
+    model.eval()
+
     # Get model prediction
     output = model(image)
     pred = output.max(1, keepdim=True)[1]
 
     # Check prediction class
-    print("Image Prediction: " + str(class_mapping[pred]))
+    image_prediction = str(class_mapping[int(pred.cpu().numpy())])
+    plt.imshow(Image.open(path))
+    plt.title("Prediction: " + str(image_prediction))
+    save_path = "./output/prediction/"
+    create_folder(save_path)
+
+    plt.savefig(save_path + path.split("/")[-1])
 
 
 def evaluate(args, device, model):
