@@ -23,11 +23,9 @@ parser.add_argument('--gpus', default="0", type=str, help='Which GPU to use?')
 parser.add_argument('--path', default='/home/nishita/datasets/skin_mnist', type=str, help='Path of dataset')
 parser.add_argument("--version", "-v", default=1, type=str, help="Version of experiment/run")
 parser.add_argument("--batch_size", default=32, type=int, help="batch-size to use")
-parser.add_argument("--lr", default=1e-4, type=float, help="learning rate to use")
+parser.add_argument("--lr", default=1e-5, type=float, help="learning rate to use")
 parser.add_argument("--image_path", default=None, type=str, help="Path for single image prediction (inference)")
-parser.add_argument("--loss-weight", default=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], nargs="+", type=float, help="weights for loss function")
-parser.add_argument("criterion", default='ce', type=str, help="Choose from 'ce' or 'focal'")
-
+parser.add_argument("--loss", default='ce', type=str, help="Choose from 'ce' or 'weighted_ce' or 'focal'")
 
 
 args = parser.parse_args()
@@ -49,12 +47,16 @@ model.fc = nn.Linear(in_features=2048, out_features=7)
 model.to(device)
 
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=300)
-weights = torch.tensor(args.loss_weight).to(device)
+class_dist = [282, 461, 967, 103, 5380, 123, 1044]
+norm_weights = [1 - (x / sum(class_dist)) for x in class_dist]
+weights = torch.tensor(norm_weights).to(device)
+
 if args.criterion == 'focal':
     criterion = FocalLoss(weight=weights, gamma=2).to(device)
-elif args.criterion == 'ce':
+elif args.criterion == 'weighted_ce':
     criterion = nn.CrossEntropyLoss(weight=weights).to(device)
+else:
+    criterion = nn.CrossEntropyLoss().to(device)
 
 if args.train:
     training(args, model, criterion, optimizer, device)

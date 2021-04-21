@@ -1,7 +1,6 @@
 import pandas
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
-from torch.autograd import Variable
 from data.dataloader import *
 from data.data_analysis import class_mapping
 

@@ -1,10 +1,5 @@
-from torch.autograd import Variable
-from tqdm import tqdm
-from utils import AverageMeter
 from torch.utils.tensorboard import SummaryWriter
-from utils import create_folder
 from data.dataloader import *
-import matplotlib.pyplot as plt
 
 
 def training(args, model, criterion, optimizer, device):
@@ -109,7 +104,7 @@ def training(args, model, criterion, optimizer, device):
             save_checkpoint(path=checkpoint_path + "checkpoint_v" + str(args.version) + ".pth", model=model, epoch=epoch, optimizer=optimizer)
             best_f1 = f1_val
             print('*****************************************************')
-            print('best record: [epoch %d], [val loss %.5f], [val acc %.5f]' % (epoch, loss_val, acc_val))
+            print('best record: [epoch %d], [val loss %.5f], [val acc %.5f], [val f1 score %.5f]' % (epoch, loss_val, acc_val, f1_val))
             print('*****************************************************')
 
     tb_writer.close()
