@@ -11,6 +11,7 @@ from data.visualize import *
 from torchvision import models
 from scripts.train import training
 from scripts.eval import evaluate, predict
+from utils import FocalLoss
 
 
 parser = argparse.ArgumentParser(description="PyTorch classification of Skin Cancer MNIST")
@@ -24,6 +25,9 @@ parser.add_argument("--version", "-v", default=1, type=str, help="Version of exp
 parser.add_argument("--batch_size", default=32, type=int, help="batch-size to use")
 parser.add_argument("--lr", default=1e-4, type=float, help="learning rate to use")
 parser.add_argument("--image_path", default=None, type=str, help="Path for single image prediction (inference)")
+parser.add_argument("--loss-weight", default=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], nargs="+", type=float, help="weights for loss function")
+parser.add_argument("criterion", default='ce', type=str, help="Choose from 'ce' or 'focal'")
+
 
 
 args = parser.parse_args()
@@ -46,8 +50,11 @@ model.to(device)
 
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=300)
-# criterion = FocalLoss(weight=weights, gamma=2).to(device)
-criterion = nn.CrossEntropyLoss().to(device)
+weights = torch.tensor(args.loss_weight).to(device)
+if args.criterion == 'focal':
+    criterion = FocalLoss(weight=weights, gamma=2).to(device)
+elif args.criterion == 'ce':
+    criterion = nn.CrossEntropyLoss(weight=weights).to(device)
 
 if args.train:
     training(args, model, criterion, optimizer, device)

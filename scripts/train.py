@@ -11,6 +11,7 @@ def training(args, model, criterion, optimizer, device):
     _, dataloaders = create_dataloaders(args)
     epoch_num = args.num_epochs
     best_val_acc = 0
+    best_f1 = 0
     val_loss_min = np.Inf
 
     logs_path = "./output/logs/v_" + str(args.version)
@@ -68,8 +69,9 @@ def training(args, model, criterion, optimizer, device):
         model.eval()
         val_loss = AverageMeter()
         val_acc = AverageMeter()
+        val_f1 = AverageMeter()
 
-        total_loss_val, total_acc_val = [], []
+        total_loss_val, total_acc_val, total_f1_val = [], [], []
 
         with torch.no_grad():
             for i, data in enumerate(dataloaders['val']):
@@ -82,26 +84,30 @@ def training(args, model, criterion, optimizer, device):
                 prediction = outputs.max(1, keepdim=True)[1]
 
                 val_acc.update(prediction.eq(labels.view_as(prediction)).sum().item() / N)
-
                 val_loss.update(criterion(outputs, labels).item())
+                val_f1.update(avg_fscore(labels.cpu().numpy(), prediction.cpu().numpy()))
+
                 tb_writer.add_scalar("Val Loss", val_loss.avg, i)
                 tb_writer.add_scalar("Val Accuracy", val_acc.avg, i)
         loss_val = val_loss.avg
         acc_val = val_acc.avg
+        f1_val = val_f1.avg
         tb_writer.add_scalar("Val Loss/Epoch", loss_val, epoch)
         tb_writer.add_scalar("Val Accuracy/Epoch", acc_val, epoch)
+        tb_writer.add_scalar("Val F1 Score/Epoch", f1_val, epoch)
 
         print('------------------------------------------------------------')
-        print('[epoch %d], [val loss %.5f], [val acc %.5f]' % (epoch, loss_val, acc_val))
+        print('[epoch %d], [val loss %.5f], [val acc %.5f], [val f1 score %.5f]' % (epoch, loss_val, acc_val, f1_val))
         print('------------------------------------------------------------')
 
         total_loss_val.append(loss_val)
         total_acc_val.append(acc_val)
+        total_f1_val.append(f1_val)
 
-        if loss_val < val_loss_min:
+        if f1_val > best_f1:
             # Save model
             save_checkpoint(path=checkpoint_path + "checkpoint_v" + str(args.version) + ".pth", model=model, epoch=epoch, optimizer=optimizer)
-            val_loss_min = loss_val
+            best_f1 = f1_val
             print('*****************************************************')
             print('best record: [epoch %d], [val loss %.5f], [val acc %.5f]' % (epoch, loss_val, acc_val))
             print('*****************************************************')
