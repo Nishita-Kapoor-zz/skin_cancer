@@ -15,23 +15,24 @@ from scripts.eval import evaluate
 
 parser = argparse.ArgumentParser(description="PyTorch classification of Skin Cancer MNIST")
 parser.add_argument('--view_data', type=bool, default=False, help='Visualize data distribution')
-parser.add_argument('--num_epochs', type=int, default=5, help='Number of epochs to train on')
-parser.add_argument('--train', default=False, type=bool, help='Train the model')
+parser.add_argument('--num_epochs', type=int, default=50, help='Number of epochs to train on')
+parser.add_argument('--train', default=True, type=bool, help='Train the model')
 parser.add_argument('--test', default=True, type=bool, help='Test the model')
-# parser.add_argument("--checkpoint", default=None, type=str, help="Path of checkpoint to evaluate from")
+parser.add_argument('--gpus', default="0", type=str, help='Which GPU to use?')
 parser.add_argument('--path', default='/home/nishita/datasets/skin_mnist', type=str, help='Path of dataset')
 parser.add_argument("--version", "-v", default=1, type=int, help="Version of experiment/run")
-parser.add_argument("--batch_size", default=2, type=int, help="batch-size to use")
-parser.add_argument("--lr", default=1e-3, type=float, help="learning rate to use")
-# parser.add_argument("--model", default="resnet18", help="network architecture")
+parser.add_argument("--batch_size", default=32, type=int, help="batch-size to use")
+parser.add_argument("--lr", default=1e-4, type=float, help="learning rate to use")
+
 
 args = parser.parse_args()
 print(f'The arguments are {vars(args)}')
 
 
 if torch.cuda.is_available():
-    device = torch.device("cuda:0")
-    print("CUDA GPU found.")
+    os.environ["CUDA_VISION_DEVICES"] = str(args.gpus)
+    device = torch.device("cuda")
+    print("CUDA GPU {} found.".format(args.gpus))
 else:
     device = torch.device("cpu")
     print("No CUDA device found. Using CPU instead.")
@@ -49,7 +50,7 @@ if args.train:
     training(args, model, criterion, optimizer, device)
 
 if args.test:
-    evaluate(args, model, device)
+    evaluate(args, device, model)
 
 if args.view_data:
     view_samples(args)

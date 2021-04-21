@@ -16,7 +16,7 @@ def get_data(data_path, imageid_path_dict):
     # dict of lesion code (dx) to name
     lesion_type_dict = {
         'nv': 'Melanocytic nevi',
-        'mel': 'Dermatofibroma',
+        'mel': 'dermatofibroma',
         'bkl': 'Benign keratosis-like lesions ',
         'bcc': 'Basal cell carcinoma',
         'akiec': 'Actinic keratoses',
