@@ -99,10 +99,12 @@ def training(args, model, criterion, optimizer, device):
         total_acc_val.append(acc_val)
         total_f1_val.append(f1_val)
 
-        if f1_val > best_f1:
+        if loss_val < val_loss_min:
+            # if f1_val > best_f1:
             # Save model
             save_checkpoint(path=checkpoint_path + "checkpoint_v" + str(args.version) + ".pth", model=model, epoch=epoch, optimizer=optimizer)
-            best_f1 = f1_val
+            val_loss_min = loss_val
+            # best_f1 = f1_val
             print('*****************************************************')
             print('best record: [epoch %d], [val loss %.5f], [val acc %.5f], [val f1 score %.5f]' % (epoch, loss_val, acc_val, f1_val))
             print('*****************************************************')
