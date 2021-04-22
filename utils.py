@@ -1,4 +1,3 @@
-import torch
 from torch.utils.data import Dataset
 import numpy as np
 from PIL import Image
@@ -91,7 +90,7 @@ class FocalLoss(nn.Module):
 
 def compute_img_mean_std(image_paths):
     """
-        computing the mean and std of three channel on the whole dataset,
+        computing the mean and std of three channels on the whole dataset,
         first we should normalize the image from 0-255 to 0-1
     """
 
@@ -126,10 +125,6 @@ def plot_confusion_matrix(cm, fig_path, classes,
                           normalize=False,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    """
     import itertools
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)

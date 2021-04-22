@@ -1,5 +1,5 @@
 """
-Image classification of skin lesions from HAM10000 dataset using pre-trained DenseNet
+Image classification of skin lesions from HAM10000 dataset using pre-trained ResNet
 
 Written by: Nishita Kapoor
 """
@@ -31,7 +31,7 @@ parser.add_argument("--loss", default='ce', type=str, help="Choose from 'ce' or 
 args = parser.parse_args()
 print(f'The arguments are {vars(args)}')
 
-
+# Check for GPUs
 if torch.cuda.is_available():
     os.environ["CUDA_VISION_DEVICES"] = str(args.gpus)
     device = torch.device("cuda:" + str(args.gpus))
@@ -40,17 +40,18 @@ else:
     device = torch.device("cpu")
     print("No CUDA device found. Using CPU instead.")
 
-
+# Load pretrained model
 model = models.resnext101_32x8d(pretrained=True)
 model.fc = nn.Linear(in_features=2048, out_features=7)
-
 model.to(device)
 
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
-class_dist = [282, 461, 967, 103, 5380, 123, 1044]
-norm_weights = [1 - (x / sum(class_dist)) for x in class_dist]
-weights = torch.tensor(norm_weights).to(device)
 
+class_dist = [282, 461, 967, 103, 5380, 123, 1044]    # Class distribution of training set
+norm_weights = [1 - (x / sum(class_dist)) for x in class_dist]
+weights = torch.tensor(norm_weights).to(device)    # weights for loss
+
+# Loss functions
 if args.loss == 'focal':
     criterion = FocalLoss(weight=weights, gamma=2).to(device)
 elif args.loss == 'weighted_ce':
@@ -58,6 +59,7 @@ elif args.loss == 'weighted_ce':
 else:
     criterion = nn.CrossEntropyLoss().to(device)
 
+# Train, test or single image predictions
 if args.train:
     training(args, model, criterion, optimizer, device)
 
@@ -67,6 +69,7 @@ if args.test:
 if args.image_path is not None:
     predict(args, device=device, model=model)
 
+# Visualizations of Data
 if args.view_data:
     view_samples(args)
     data_dist(args)

@@ -3,19 +3,24 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from data.dataloader import *
 from data.data_analysis import class_mapping
+from glob import glob
 
 
 def predict(args, device, model):
 
     path = args.image_path
-    norm_mean = [0.7630401, 0.5456478, 0.57004625]  # change back later
-    norm_std = [0.1409284, 0.1526128, 0.16997087]
+
+    all_image_path = glob(os.path.join(args.path, '*', '*.jpg'))
+    norm_mean, norm_std = compute_img_mean_std(all_image_path)
+    # norm_mean = [0.7630401, 0.5456478, 0.57004625]   # pre-calculated mean and std
+    # norm_std = [0.1409284, 0.1526128, 0.16997087]
     image_transforms = image_transform(norm_mean, norm_std)
 
-    loader = image_transforms['test']
+    loader = image_transforms['test']  # apply 'test' set transforms to image
 
     image = loader(Image.open(path)).float().unsqueeze(0).to(device)
 
+    # check if checkpoint available and load
     checkpoint_path = "./output/checkpoints/checkpoint_v" + str(args.version) + ".pth"
     if os.path.exists(checkpoint_path):
         checkpoint = load_checkpoint(path=checkpoint_path, model=model)

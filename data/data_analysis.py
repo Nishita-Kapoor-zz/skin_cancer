@@ -1,19 +1,17 @@
-# Import the necessary modules
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import os
-from glob import glob
 import seaborn as sns
 colors = sns.color_palette()
 
-
+# dict mapping class labels to respective names
 class_mapping = {0:'Actinic keratoses',
                  1:"Basal cell carcinoma",
                  2: 'Benign keratosis-like lesions',
                  3: 'Dermatofibroma',
                  4: 'Melanocytic nevi',
                  5: 'Vascular lesions',
-                 6: 'dermatofibroma',
+                 6: 'melanoma',
                  }
 
 
@@ -72,6 +70,7 @@ def get_data(data_path, imageid_path_dict):
 
     df_original['train_or_val'] = df_original['image_id']
     df_original['train_or_val'] = df_original['train_or_val'].apply(get_val_rows)
+
     # filter out train rows
     df_train = df_original[df_original['train_or_val'] == 'train']
 
