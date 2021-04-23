@@ -30,8 +30,7 @@ I have used resnext101_32x8d with pretrained weights for training and classifica
 - [Installation](#installation)  
 - [Usage](#usage)  
 - [Data](#dataset)    
-- [Training](#training)    
-- [Results](#results)    
+- [Training and Results](#training-and-results)    
 - [License](#license)
 - [Acknowledgements](#acknowledgements)     
 - [Footer](#footer)
@@ -114,43 +113,55 @@ The dataset is quite imbalanced w.r.t the classes.
 ![class_dist](images/class_dist.png)
 
 
-### Training: 
+### Training and Results: 
 
 A bunch of trainings were performed with following parameters, in order to compare and select best model performance.
-- model: ``resnext101_32x8d ``` with pretrained weights
+- model: ``` resnext101_32x8d ``` with pretrained weights
 - epochs: 50
 - batch size: 32
 
-Training and validation curves were visualized on Tensorboard.
+Training and validation curves were visualized on Tensorboard and Classification reports were evaluated
+for the test set.
 
-#### Experiment 1: Learning rate
-#### Experiment 2: Evaluation metric: Accuracy vs F1 Score
-#### Experiment 3: Cross Entropy (CE) vs Weighted Cross Entropy (WCE) vs Weighted Focal loss (WF)
+#### Experiment 1: Learning rates
+Multiple learning rates were experimented with and following accuracy and loss curves were
+visualized for training and val set.
 
+![learning_rates](images/learning_rates.png)
 
+The lower the learning rate, better the performance. Hence a **learning rate of 0.00001 (1e-5)** was fixed for 
+further trainings.
 
-
-### Results
-
-
-- **Training Curves** 
-
-
-- **Model performances**:
+#### Experiment 2: Cross Entropy (CE) vs Weighted Cross Entropy (WCE) vs Weighted Focal loss (WF)
+- Since the dataset is quite imbalanced in the 7 classes, weighted loss functions (Weighted Cross Entropy
+and Weighted Focal Loss) were evaluated against baseline of Cross Entropy loss.
+- Weights used were corresponding to the class distribution in the training set.
+- Focal loss was implemented with Gamma =2. Other values can be compared in further experiments.
+- Because of the imbalanced class, accuracy cannot be the best evaluation metric. Hence Test set results were
+also compared on metrics like average precision, average recall and average F1 scores. Confusion matrices were also plotted.
   
+|                 |Accuracy (%)| Precision| Recall | F1 Score |
+| --------------- |:----------:|:--------:|:------:|---------:|
+|        CE       |     92     |   0.84   |  0.79  |  0.81    |
+|  Weighted Focal |     88     |   0.75   |  0.69  |  0.69    |
+|   Weighted CE   |     90     |   0.68   |  0.78  |  0.72    |
 
-- **Confusion Matrix**
 
 
+![Confusion_matrices](images/Confusion_matrices.png)
 
-
+#### Conclusion:
+- Adding weights to the loss doesn't seem to have any significant improvement on performance.
+  Further values of gamma for Focal loss can be explored.
+- Decreasing learning rate has quite an effect on training and val accuracies.
+- Overall, best F1 score obtained was of 0.81 with the ``` resnext101_32x8d ``` trained over 50 epochs
+  with a learning rate of 0.00001. 
 
 ### License
 Please see [LICENSE](./LICENSE)
     
 ### Acknowledgements
 The project is intended purely as a learning experience. The framework was built based on the
-original code found
 [here](https://github.com/musicmilif/ham10000) and
 [here](https://github.com/ishanrai05/skin-cancer-prediction).
 
